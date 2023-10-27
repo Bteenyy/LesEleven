@@ -1,9 +1,12 @@
+package quru.qa;
 
 import com.codeborne.pdftest.PDF;
 import com.codeborne.xlstest.XLS;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import quru.qa.model.GlossaryModel;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,9 +51,16 @@ public class SelenideFilesTest {
 
     @Test
     void jacksonTest() throws Exception {
-        try (InputStream stream = cl.getResourceAsStream("glossary.json"))
-        {
-
+        try (InputStream stream = cl.getResourceAsStream("TestJac.json");
+             Reader reader = new InputStreamReader(stream)) {
+            ObjectMapper mapper = new ObjectMapper();
+            GlossaryModel glossaryModel = mapper.readValue(reader, GlossaryModel.class);
+            Assertions.assertEquals("Razor", glossaryModel.getHeroName());
+            Assertions.assertEquals("Ranged", glossaryModel.getTypeOfHero());
+            Assertions.assertEquals(25, glossaryModel.getMaxLvl());
+            Assertions.assertEquals("OffLane", glossaryModel.getLane());
+            Assertions.assertEquals("Power Treads", glossaryModel.getMostUsedItems());
+            Assertions.assertEquals("Tidehunter", glossaryModel.getBestVersus());
         }
     }
 }

@@ -1,0 +1,8 @@
+{
+  "heroName":"Razor",
+  "typeOfHero":"Ranged",
+  "maxLvl":25,
+  "lane": "OffLane",
+  "mostUsedItems": "Power Treads",
+  "bestVersus": "Tidehunter"
+}
