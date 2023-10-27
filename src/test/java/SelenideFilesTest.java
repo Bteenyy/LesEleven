@@ -1,9 +1,17 @@
 
 import com.codeborne.pdftest.PDF;
+import com.codeborne.xlstest.XLS;
+import com.opencsv.CSVReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.Csv;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -12,14 +20,29 @@ public class SelenideFilesTest {
 
     @Test
     void RarTest() throws Exception {
-        try (InputStream stream = cl.getResourceAsStream("Test.zip")) {
+        try (InputStream stream = cl.getResourceAsStream("TestRes.zip")) {
             assert stream != null;
             try (ZipInputStream reader = new ZipInputStream(stream)) {
                 ZipEntry entry;
                 while ((entry = reader.getNextEntry()) != null) {
                     if (entry.getName().contains(".pdf")) {
-                        PDF pdf=new PDF(reader);
-
+                        PDF pdf = new PDF(reader);
+                        Assertions.assertEquals("Nuance Communications, Inc.", pdf.author);
+                        Assertions.assertEquals(59, pdf.numberOfPages);
+                        Assertions.assertNull(pdf.signatureTime);
+                    } else if (entry.getName().contains(".xlsx")) {
+                        XLS xls = new XLS(reader);
+                        Assertions.assertEquals(0, xls.excel.getAllNames().size());
+                        Assertions.assertEquals("TemplateImportOU", xls.excel.getSheetAt(0).getSheetName());
+                        Assertions.assertEquals("org.apache.poi.xssf.usermodel.XSSFCellStyle", xls.excel.createCellStyle().getClass().getName());
+                    } else if (entry.getName().contains(".csv")) {
+                        Reader readerCsv = new InputStreamReader(reader);
+                        CSVReader csvReader = new CSVReader(readerCsv);
+                        List<String[]> value = csvReader.readAll();
+                        Assertions.assertEquals(3,value.size());
+                        Assertions.assertArrayEquals(new String[]{"Day", "27"},value.get(0));
+                        Assertions.assertArrayEquals(new String[]{"Month", "April"},value.get(1));
+                        Assertions.assertArrayEquals(new String[]{"Year", "1992"},value.get(2));
                     }
                 }
             }
