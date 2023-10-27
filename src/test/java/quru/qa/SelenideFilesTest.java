@@ -17,6 +17,7 @@ import java.util.zip.ZipInputStream;
 
 public class SelenideFilesTest {
     private final ClassLoader cl = SelenideFilesTest.class.getClassLoader();
+    ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void RarTest() throws Exception {
@@ -53,7 +54,6 @@ public class SelenideFilesTest {
     void jacksonTest() throws Exception {
         try (InputStream stream = cl.getResourceAsStream("TestJac.json");
              Reader reader = new InputStreamReader(stream)) {
-            ObjectMapper mapper = new ObjectMapper();
             GlossaryModel glossaryModel = mapper.readValue(reader, GlossaryModel.class);
             Assertions.assertEquals("Razor", glossaryModel.getHeroName());
             Assertions.assertEquals("Ranged", glossaryModel.getTypeOfHero());
