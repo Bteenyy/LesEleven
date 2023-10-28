@@ -20,7 +20,7 @@ public class SelenideFilesTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    void RarTest() throws Exception {
+    void pdfTest() throws Exception {
         try (InputStream stream = cl.getResourceAsStream("TestRes.zip")) {
             assert stream != null;
             try (ZipInputStream reader = new ZipInputStream(stream)) {
@@ -31,12 +31,38 @@ public class SelenideFilesTest {
                         Assertions.assertEquals("Nuance Communications, Inc.", pdf.author);
                         Assertions.assertEquals(59, pdf.numberOfPages);
                         Assertions.assertNull(pdf.signatureTime);
-                    } else if (entry.getName().contains(".xlsx")) {
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void xlsxTest() throws Exception {
+        try (InputStream stream = cl.getResourceAsStream("TestRes.zip")) {
+            assert stream != null;
+            try (ZipInputStream reader = new ZipInputStream(stream)) {
+                ZipEntry entry;
+                while ((entry = reader.getNextEntry()) != null) {
+                    if (entry.getName().contains(".xlsx")) {
                         XLS xls = new XLS(reader);
                         Assertions.assertEquals(0, xls.excel.getAllNames().size());
                         Assertions.assertEquals("TemplateImportOU", xls.excel.getSheetAt(0).getSheetName());
                         Assertions.assertEquals("org.apache.poi.xssf.usermodel.XSSFCellStyle", xls.excel.createCellStyle().getClass().getName());
-                    } else if (entry.getName().contains(".csv")) {
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void csvTest() throws Exception {
+        try (InputStream stream = cl.getResourceAsStream("TestRes.zip")) {
+            assert stream != null;
+            try (ZipInputStream reader = new ZipInputStream(stream)) {
+                ZipEntry entry;
+                while ((entry = reader.getNextEntry()) != null) {
+                    if (entry.getName().contains(".csv")) {
                         Reader readerCsv = new InputStreamReader(reader);
                         CSVReader csvReader = new CSVReader(readerCsv);
                         List<String[]> value = csvReader.readAll();
@@ -49,6 +75,7 @@ public class SelenideFilesTest {
             }
         }
     }
+
 
     @Test
     void jacksonTest() throws Exception {
